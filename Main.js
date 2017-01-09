@@ -1,12 +1,69 @@
 var Downloader =  require('./Downloader.js');
 var Scanner = require('./Scanner.js');
 var FileStream = require('fs');
+//JQuery for node
+var Cheerio = require('cheerio');
 
 var openConnections = 0;
+var maxConnections = 20;
 
-var inputCount = 0;
+//The generation of the urls to scan
+for(var currentId = 0; currentId < 6000; currentId++)
+    downloadAndDelay("http://sportunion.at/de/sportangebote/vereine/clubshow-"+ currentId +"?Page=1");
 
-var s = new Scanner(function(mails, verein, url){
+function downloadAndDelay(url)
+{
+    if(openConnections < maxConnections)
+    {
+        //Do it now
+        console.log("Download: " + url);
+        
+        openConnections++;
+
+        new Downloader(url, 
+            function(url, body){ 
+                console.log("Download succeeded")
+                openConnections--; 
+                onGotPage(url, body); 
+            },
+            function(url, response, error){
+                console.log("Download failed");
+                openConnections--; 
+                downloadAndDelay(url);
+                //FileStream.appendFile('./downloadError.log', this.url + "\r\n"); 
+            }
+        );
+    }
+    else{
+        //Do it later
+        setTimeout(function() {
+            downloadAndDelay(url)
+        }, 100 + (Math.random() * 1000));
+    }
+}
+
+//The actual scanning code
+onGotPage(url, html)
+{
+    var mails = [];
+    let $ = Cheerio.load(html);
+    var verein = "NULL";
+
+    $(".detailrow").each(function( index ) {
+        if(verein == "NULL" && $( this ).text().startsWith("Verein"))
+        {
+            verein = $(this).text().substr("Verein".length);
+        }
+    });
+
+    $(".detailrow a").each(function( index ) {
+        if($( this ).attr("href").startsWith("mailto:"))
+        {
+            var mail = $(this).text();
+            mails.push(mail);
+        }
+    });
+
     if(verein == "NULL")
         verein = "";
 
@@ -24,59 +81,4 @@ var s = new Scanner(function(mails, verein, url){
                 console.log("ERROR: " + err); 
         });
     }
-
-    inputCount++;
-    console.log(inputCount);
-});
-
-//doRegularDownload();
-doErrorDownload();
-
-function doRegularDownload(){
-    for(var currentId = 0; currentId < 6000; currentId++)
-        downloadAndDelay("http://sportunion.at/de/sportangebote/vereine/clubshow-"+ currentId +"?Page=1");
-}
-
-function doErrorDownload(){
-    var input = FileStream.createReadStream('1.log');
-    readLines(input, function(data) {
-        downloadAndDelay(data);
-    });
-}
-
-function downloadAndDelay(url)
-{
-    if(openConnections < 20)
-    {
-        console.log("Download: " + url);
-        new Downloader(s, url, function(){ openConnections--; });
-        openConnections++;
-    }
-    else
-        setTimeout(function() {
-            downloadAndDelay(url)
-        }, 100 + (Math.random() * 1000));
-}
-
-//###################################### Readline #####
-
-function readLines(input, func) {
-  var remaining = '';
-
-  input.on('data', function(data) {
-    remaining += data;
-    var index = remaining.indexOf('\r\n');
-    while (index > -1) {
-      var line = remaining.substring(0, index);
-      remaining = remaining.substring(index + 1);
-      func(line);
-      index = remaining.indexOf('\r\n');
-    }
-  });
-
-  input.on('end', function() {
-    if (remaining.length > 0) {
-      func(remaining);
-    }
-  });
 }

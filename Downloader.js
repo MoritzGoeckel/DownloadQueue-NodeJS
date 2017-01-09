@@ -3,12 +3,11 @@ var FileStream = require('fs');
 
 module.exports = class Downloader{
 
-    constructor(scanner, url, callback)
+    constructor(url, callbackSuccess, callbackError)
     {
-        this.isBusy = true;
-        this.scanner = scanner;
         this.url = url;
-        this.callback = callback;
+        this.callbackSuccess = callbackSuccess;
+        this.callbackError = callbackError;
 
         var options = {
             url: this.url,
@@ -21,23 +20,18 @@ module.exports = class Downloader{
     }
 
     handleResponse (error, response, body) {
-        this.isBusy = false;        
         
-        this.callback(this.url, response);
-
-        if(typeof response == 'undefined')
-        {
-            console.log("Error downloading: " + this.url);
-            FileStream.appendFile('./downloadError.log', this.url + "\r\n");
-            return;
-        }
-        
-        if(response.statusCode == 302){
+        /*if(response.statusCode == 302){
             console.log("Moved to: " + response.headers['Location']);
-        }
+        }*/
         
-        if (!error && response.statusCode == 200) {
-            this.scanner.onGotPage(body, this.url);
+        if (!error && response.statusCode == 200) 
+        {
+            this.callbackSuccess(this.url, body);
+        }
+        else
+        {
+            this.callbackError(this.url, response, error);
         }
     }
 }
