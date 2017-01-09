@@ -1,3 +1,5 @@
+var FileStream = require('fs');
+
 function doErrorDownload(){
     var input = FileStream.createReadStream('1.log');
     readLines(input, function(data) {

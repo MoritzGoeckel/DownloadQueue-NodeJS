@@ -1,6 +1,4 @@
 var Downloader =  require('./Downloader.js');
-var Scanner = require('./Scanner.js');
-var FileStream = require('fs');
 //JQuery for node
 var Cheerio = require('cheerio');
 
