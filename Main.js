@@ -20,7 +20,7 @@ function downloadAndDelay(url)
 
         new Downloader(url, 
             function(url, body){ 
-                console.log("Download succeeded")
+                console.log("Download succeeded");
                 openConnections--; 
                 onGotPage(url, body); 
             },
@@ -28,7 +28,6 @@ function downloadAndDelay(url)
                 console.log("Download failed");
                 openConnections--; 
                 downloadAndDelay(url);
-                //FileStream.appendFile('./downloadError.log', this.url + "\r\n"); 
             }
         );
     }

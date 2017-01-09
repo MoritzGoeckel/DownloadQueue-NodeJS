@@ -27,3 +27,5 @@ function readLines(input, func) {
     }
   });
 }
+
+//FileStream.appendFile('./downloadError.log', this.url + "\r\n"); 
