@@ -1,5 +1,5 @@
 #DownloadQueue
-A simple queue to download web pages.
+A simple queue to download web pages in NodeJS
 
 ##Features
 * Parallel downloads
