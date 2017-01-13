@@ -3,7 +3,6 @@ var DownloadQueue = require('./DownloadQueue.js');
 
 var queue = new DownloadQueue(100, onGotPage);
 
-//The generation of the urls to scan
 for(var currentId = 0; currentId < 6000; currentId++)
     queue.enqueDownload("http://sportunion.at/de/sportangebote/vereine/clubshow-"+ currentId +"?Page=1");
 
