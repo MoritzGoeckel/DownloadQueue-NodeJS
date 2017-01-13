@@ -1,7 +1,7 @@
 var Cheerio = require('cheerio');
 var DownloadQueue = require('./DownloadQueue.js');
 
-var queue = new DownloadQueue(20, onGotPage);
+var queue = new DownloadQueue(100, onGotPage);
 
 //The generation of the urls to scan
 for(var currentId = 0; currentId < 6000; currentId++)
@@ -9,7 +9,7 @@ for(var currentId = 0; currentId < 6000; currentId++)
 
 function onGotPage(url, html)
 {
-    console.log("Got page: " + url);
+    console.log("Got page: " + url + " " + queue.getQueueLength() + "Q " + queue.getOpenConnections() + "c's");
     let $ = Cheerio.load(html);
 
     //The actual scanning code goes here
