@@ -38,7 +38,7 @@ module.exports = class DownloadQueue{
                     }
                     else
                     {
-                        console.log("Download failed " + url);
+                        console.log("Download failed, reenqueing: " + queEntry.url);
                         base[openConnections]--;
                         base.enqueDownload(queEntry);
                     }
