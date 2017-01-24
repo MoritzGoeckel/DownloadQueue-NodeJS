@@ -6,22 +6,35 @@ A simple queue to download web pages in NodeJS
 * Limit simultaneous connections
 * Retry on failed downloads
 
+##API
+``` Javascript
+constructor(openConnectionLimit)
+.enqueDownload(url, callback)
+.destroy()              //Stopps and deletes queue
+.getQueueLength()       //How many are enqued
+.getOpenConnections()   //Currently open connections
+```
+
 ##Usage
 ``` Javascript
-//Include
+//Including the library
 var DownloadQueue = require('./DownloadQueue.js');
 
-//Create object with 100 simultaneous connections and a callback
-var queue = new DownloadQueue(100, onGotPage);
+//Creating the queue object
+//Setting the limit to 100 simultaneous connections
+var queue = new DownloadQueue(100); 
 
-//Enque some urls
+//Generating some requests
 for(var currentId = 0; currentId < 6000; currentId++)
-    queue.enqueDownload("http://sportunion.at/de/sportangebote/vereine/clubshow-"+ currentId +"?Page=1");
+    queue.enqueDownload(
+        "http://sportunion.at/de/sportangebote/vereine/clubshow-"+ currentId +"?Page=1", //Url
+        gotPageCallback //callback
+    );
 
-//React on page content as it comes
-function onGotPage(url, content)
+//The callback method
+function gotPageCallback(url, error, response, html) 
 {
-    console.log("Got page: " + url + " " + queue.getQueueLength() + " left in queue " + queue.getOpenConnections() + " connections open");
-    //The actual scanning code goes here
+    console.log("Got page: " + url + " " + queue.getQueueLength() + "Q " + queue.getOpenConnections() + "c's");
+    //Todo: The actual scanning code goes here
 }
 ```

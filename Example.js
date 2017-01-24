@@ -1,20 +1,20 @@
-var Cheerio = require('cheerio');
+//Including the library
 var DownloadQueue = require('./DownloadQueue.js');
 
-var queue = new DownloadQueue(100, onGotPage);
+//Creating the queue object
+//Setting the limit to 100 simultaneous connections
+var queue = new DownloadQueue(100); 
 
+//Generating some requests
 for(var currentId = 0; currentId < 6000; currentId++)
-    queue.enqueDownload("http://sportunion.at/de/sportangebote/vereine/clubshow-"+ currentId +"?Page=1");
+    queue.enqueDownload(
+        "http://sportunion.at/de/sportangebote/vereine/clubshow-"+ currentId +"?Page=1", //Url
+        gotPageCallback //callback
+    );
 
-function onGotPage(url, html)
+//The callback method
+function gotPageCallback(url, error, response, html) 
 {
     console.log("Got page: " + url + " " + queue.getQueueLength() + "Q " + queue.getOpenConnections() + "c's");
-    let $ = Cheerio.load(html);
-
-    //The actual scanning code goes here
-    
-    /*$(".detailrow").each(function( index ) {
-        if(verein == "NULL" && $( this ).text().startsWith("Verein"))
-            verein = $(this).text().substr("Verein".length);
-    });*/
+    //Todo: The actual scanning code goes here
 }

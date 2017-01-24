@@ -1,31 +1,30 @@
 var request = require('request');
-var urlQueue = Symbol();
+var queue = Symbol();
 var interval = Symbol();
 var openConnections = Symbol();
 
 module.exports = class DownloadQueue{
-    constructor(openConnectionLimit, callback)
+    constructor(openConnectionLimit)
     {
         var base = this;
 
         //Private
         this[openConnections] = 0;
-        this[urlQueue] = [];
+        this[queue] = [];
         this[interval] = setInterval(checkDownloadQueue, 1);
 
         //Public
-        this.callback = callback;
         this.openConnectionLimit = openConnectionLimit;
 
         function checkDownloadQueue()
         {
-            if(base[urlQueue].length != 0 && base[openConnections] <= base.openConnectionLimit)
+            if(base[queue].length != 0 && base[openConnections] <= base.openConnectionLimit)
             {
-                var url = base[urlQueue].shift();               
+                var queEntry = base[queue].shift();               
                 base[openConnections]++;
 
                 var options = {
-                    url: url,
+                    url: queEntry.url,
                     headers: {
                         'User-Agent': 'request'
                     }
@@ -35,22 +34,22 @@ module.exports = class DownloadQueue{
                     if (!error && response.statusCode == 200) 
                     {
                         base[openConnections]--; 
-                        base.callback(url, body);
+                        queEntry.callback(queEntry.url, error, response, body);
                     }
                     else
                     {
                         console.log("Download failed " + url);
                         base[openConnections]--;
-                        base.enqueDownload(url);
+                        base.enqueDownload(queEntry);
                     }
                 });
             }
         }
     }
 
-    enqueDownload(url)
+    enqueDownload(url, callback)
     {
-        this[urlQueue].push(url);
+        this[queue].push({url:url, callback:callback});
     }
 
     destroy()
@@ -60,7 +59,7 @@ module.exports = class DownloadQueue{
 
     getQueueLength()
     {
-        return this[urlQueue].length;
+        return this[queue].length;
     }
 
     getOpenConnections()
