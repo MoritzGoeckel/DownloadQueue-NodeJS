@@ -1,6 +1,11 @@
 # A simple Download Queue with serverside JQuery
 A simple queue to download web pages in NodeJS and analyze them with server side JQuery if necessary
 
+## Install
+```
+npm install download-queue
+```
+
 ## Features
 * Parallel downloads
 * Limit simultaneous connections
