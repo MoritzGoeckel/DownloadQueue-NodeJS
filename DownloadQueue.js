@@ -1,12 +1,14 @@
-var request = require('request');
-var queue = Symbol();
-var interval = Symbol();
-var openConnections = Symbol();
+const request = require('request');
+const cheerio = require('cheerio')
+
+let queue = Symbol();
+let interval = Symbol();
+let openConnections = Symbol();
 
 module.exports = class DownloadQueue{
-    constructor(openConnectionLimit)
+    constructor(openConnectionLimit, useJQuery)
     {
-        var base = this;
+        let base = this;
 
         //Private
         this[openConnections] = 0;
@@ -15,6 +17,7 @@ module.exports = class DownloadQueue{
 
         //Public
         this.openConnectionLimit = openConnectionLimit;
+        this.useJQuery = useJQuery;
 
         function checkDownloadQueue()
         {
@@ -34,13 +37,18 @@ module.exports = class DownloadQueue{
                     if (!error && response.statusCode == 200) 
                     {
                         base[openConnections]--; 
-                        queEntry.callback(queEntry.url, error, response, body);
+
+                        let $ = null;
+                        if(base.useJQuery)
+                            $ = cheerio.load(body);
+                        
+                        queEntry.callback(queEntry.url, error, response, body, $);
                     }
                     else
                     {
                         console.log("Download failed, reenqueing: " + queEntry.url);
                         base[openConnections]--;
-                        base.enqueDownload(queEntry);
+                        base.enqueDownload(queEntry.url);
                     }
                 });
             }
