@@ -23,7 +23,8 @@ constructor(openConnectionLimit, useJQuery)
 ## Usage
 ``` Javascript
 //Including the library
-var DownloadQueue = require('./DownloadQueue.js');
+//"./DownloadQueue.js" if you installed it via github
+var DownloadQueue = require('download-queue');  
 
 //Creating the queue object
 //Setting the limit to 100 simultaneous connections
@@ -37,7 +38,7 @@ for(var currentId = 0; currentId < 6000; currentId++)
     );
 
 //The callback method
-function gotPageCallback(url, error, response, html) 
+function gotPageCallback(url, error, response, html, $) 
 {
     console.log("Got page: " + url + " " + queue.getQueueLength() + "Q " + queue.getOpenConnections() + "c's");
 

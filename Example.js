@@ -1,5 +1,5 @@
 //Including the library
-var DownloadQueue = require('./DownloadQueue.js');
+var DownloadQueue = require('download-queue'); //"./DownloadQueue.js" if you installed it via github 
 
 //Creating the queue object
 //Setting the limit to 100 simultaneous connections
