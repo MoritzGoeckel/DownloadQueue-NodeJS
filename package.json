@@ -1,0 +1,21 @@
+{
+    "name": "download-queue",
+    "version": "0.2.0",
+    "description": "Downloading web pages with a limited number of connections, analyzing html with server side JQuery",
+    "main": "DownloadQueue.js",
+    "dependencies": {
+      "request": "latest",
+      "cheerio": "latest"      
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/MoritzGoeckel/DownloadQueue-NodeJS"
+    },
+    "keywords": [
+      "Download",
+      "JQuery",
+      "Queue",
+      "Limit connections"      
+    ],
+    "license": "MIT"
+  }
